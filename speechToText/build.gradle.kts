@@ -4,45 +4,44 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    `maven-publish`
 }
 
-object Project {
-    const val ARTIFACT_ID = "speech-to-text"
-    const val NAMESPACE = "com.eslamwael74.speechtotext"
+android {
+    namespace = "com.eslamwael74.speechtotext"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        // Make sure to add this for consuming the library on Android
+        aarMetadata {
+            minCompileSdk = libs.versions.android.minSdk.get().toInt()
+        }
+    }
+
+    // This block tells AGP which variant the "kotlin" component should use
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 kotlin {
-
-    // Target declarations - add or remove as needed below. These define
-    // which platforms this KMP module supports.
-    // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
+    androidTarget() // Removed publishLibraryVariants, AGP's publishing block handles it
 
     // For iOS targets, this is also where you should
-    // configure native binary output. For more information, see:
-    // https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
-
-    // A step-by-step guide on how to include this library in an XCode
-    // project can be found here:
-    // https://developer.android.com/kotlin/multiplatform/migrate
+    // configure native binary output.
     val xcfName = "speechToTextKit"
 
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = xcfName
         }
     }
@@ -51,7 +50,6 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "speechToText"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -69,17 +67,11 @@ kotlin {
         binaries.executable()
     }
 
-
-    // Source set declarations.
-    // Declaring a target automatically creates a source set with the same name. By default, the
-    // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
-    // common to share sources between related targets.
-    // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
+    // Source set declarations
     sourceSets {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
@@ -115,13 +107,48 @@ kotlin {
     }
 }
 
+// This block is outside the kotlin block
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("speechToTextPublication") { // Unique publication name
+                from(components["kotlin"]) // Use the KMP "kotlin" component
 
-// Add Android-specific configurations
-android {
-    namespace = Project.NAMESPACE
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+                groupId = "com.github.eslamwael74.speechtotextkit"
+                artifactId = "speechToText"
+                version = "1.0.0"
+
+                pom {
+                    name.set("SpeechToText Core Library")
+                    description.set("Core Speech to Text API for Kotlin Multiplatform")
+                    url.set("https://github.com/eslamwael74/speechtotextkit")
+                    licenses {
+                        license {
+                            name.set("Apache License 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("eslamwael74")
+                            name.set("Eslam Wael")
+                            url.set("https://github.com/eslamwael74")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/eslamwael74/speechtotextkit.git")
+                        developerConnection.set("scm:git:ssh://github.com/eslamwael74/speechtotextkit.git")
+                        url.set("https://github.com/eslamwael74/speechtotextkit")
+                    }
+                }
+            }
+        }
+        repositories {
+            // For local testing, you can publish to a local directory
+            maven {
+                name = "localBuildRepo"
+                url = uri(rootProject.buildDir.resolve("repo"))
+            }
+        }
     }
 }
-
