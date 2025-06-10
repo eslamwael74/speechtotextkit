@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![KMP](https://img.shields.io/badge/Kotlin%20Multiplatform-Mobile-orange)](https://kotlinlang.org/docs/multiplatform.html)
 [![Version](https://img.shields.io/badge/Version-1.0.0-green)]()
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.eslamwael74.speechtotextkit/speechToText)](https://central.sonatype.com/artifact/io.github.eslamwael74.speechtotextkit/speechToText)
 
 SpeechToTextKit is a Kotlin Multiplatform library that provides a simple and unified API for speech-to-text functionality across multiple platforms: Android, iOS, Desktop (JVM), and Web (Wasm).
 
@@ -27,27 +28,17 @@ SpeechToTextKit is a Kotlin Multiplatform library that provides a simple and uni
 
 ## 🚀 Installation
 
-in progress...
-Add the following to your `settings.gradle.kts`:
+The library is available on Maven Central via Sonatype.
 
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        // ...
-        maven { url = uri("https://jitpack.io") }
-    }
-}
-```
-
-Then add the dependency to your module's `build.gradle.kts`:
+Add the following to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
     // Core library
-    implementation("com.github.eslamwael74.speechtotextkit:speechToText:1.0.0")
+    implementation("io.github.eslamwael74.speechtotextkit:speechToText:1.0.0")
     
     // Optional: Compose UI components
-    implementation("com.github.eslamwael74.speechtotextkit:speechToTextCompose:1.0.0")
+    implementation("io.github.eslamwael74.speechtotextcompose:speechToTextCompose:1.0.0")
 }
 ```
 
@@ -61,7 +52,7 @@ There are currently two ways to use this library:
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import com.eslamwael74.speechtotextcompose.rememberSpeechToText
+import io.github.eslamwael74.speechtotextcompose.rememberSpeechToText
 
 @Composable
 fun SpeechRecognitionScreen() {
@@ -237,4 +228,3 @@ Distributed under the Apache 2.0 License. See `LICENSE` for more information.
 Eslam Wael - [@eslamwael74](https://github.com/eslamwael74)
 
 Project Link: [https://github.com/eslamwael74/speechtotextkit](https://github.com/eslamwael74/speechtotextkit)
-
