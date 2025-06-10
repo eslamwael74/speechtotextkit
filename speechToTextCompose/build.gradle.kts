@@ -1,17 +1,19 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    `maven-publish`
+    alias(libs.plugins.mavenPublishPlugin)
 }
 
 android {
-    namespace = "com.eslamwael74.speechtotextcompose"
+    namespace = "io.github.eslamwael74.speechtotextcompose"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
@@ -21,20 +23,14 @@ android {
             minCompileSdk = libs.versions.android.minSdk.get().toInt()
         }
     }
-
-    // This block tells AGP which variant the "kotlin" component should use
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 kotlin {
-    androidTarget() // Removed publishLibraryVariants, AGP's publishing block handles it
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
 
-    val xcfName = "speechToTextKitCompose"
+    val xcfName = "speechToTextCompose"
 
     listOf(
         iosX64(),
@@ -70,48 +66,46 @@ kotlin {
     }
 }
 
-// This block is outside the kotlin block
-afterEvaluate {
-    publishing {
-        publications {
-            // Configure the existing KMP publication
-            named<MavenPublication>("kotlinMultiplatform") {
-                // Explicitly set GAV for JitPack
-                this.groupId = "com.github.eslamwael74.speechtotextkit"
-                this.artifactId = "speechToTextCompose" // KMP default is project name, ensure it's what we want
-                this.version = "1.0.0"
+mavenPublishing {
 
-                pom {
-                    name.set("SpeechToText Compose Library")
-                    description.set("Jetpack Compose UI components for SpeechToTextKit")
-                    url.set("https://github.com/eslamwael74/speechtotextkit")
-                    licenses {
-                        license {
-                            name.set("Apache License 2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("eslamwael74")
-                            name.set("Eslam Wael")
-                            url.set("https://github.com/eslamwael74")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git:git://github.com/eslamwael74/speechtotextkit.git")
-                        developerConnection.set("scm:git:ssh://github.com/eslamwael74/speechtotextkit.git")
-                        url.set("https://github.com/eslamwael74/speechtotextkit")
-                    }
-                }
+    coordinates(
+        groupId = "io.github.eslamwael74.speechtotextcompose",
+        artifactId = "speechToTextCompose",
+        version = "1.0.0"
+    )
+
+    // Configure POM metadata for the published artifact
+    pom {
+        name.set("SpeechToTextCompose")
+        description.set("A Kotlin Multiplatform library for speech-to-text functionality in Compose applications.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/eslamwael74/speechtotextkit")
+
+        licenses {
+            license {
+                name.set("MIT")
+                url.set("https://opensource.org/licenses/MIT")
             }
         }
-        repositories {
-            // For local testing, you can publish to a local directory
-            maven {
-                name = "localBuildRepo"
-                url = uri(rootProject.buildDir.resolve("repo"))
+
+        // Specify developers information
+        developers {
+            developer {
+                id.set("eslamwael74")
+                name.set("Eslam Wael")
+                email.set("eslam.wael.8.ew@gmail.com")
             }
+        }
+
+        // Specify SCM information
+        scm {
+            url.set("https://github.com/eslamwael74/speechtotextkit")
         }
     }
+
+    // Configure publishing to Maven Central
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    // Enable GPG signing for all publications
+    signAllPublications()
 }

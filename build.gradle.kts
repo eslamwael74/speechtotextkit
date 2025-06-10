@@ -8,16 +8,5 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.jetbrainsKotlinJvm) apply false
-    `maven-publish`
-}
-
-// Project-wide configuration for JitPack publishing
-subprojects {
-    group = "com.github.eslamwael74.speechtotextkit"
-    version = "1.0.0"
-
-    // Apply common publishing configuration to all modules
-    plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        apply(plugin = "maven-publish")
-    }
+    alias(libs.plugins.mavenPublishPlugin) apply false
 }

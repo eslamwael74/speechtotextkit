@@ -19,6 +19,7 @@ kotlinStdlib = "2.1.21"
 runner = "1.5.2"
 core = "1.5.0"
 jetbrainsKotlinJvm = "2.1.21"
+mavenPublishPlugin = "0.32.0"
 
 
 [libraries]
@@ -48,3 +49,4 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+mavenPublishPlugin = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublishPlugin" }

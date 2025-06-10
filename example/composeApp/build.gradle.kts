@@ -84,7 +84,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.eslamwael74.speechtotextkit"
+    namespace = "com.eslamwael74.speechtotextkit.example"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
